@@ -46,8 +46,8 @@ export default function ValentineApp() {
     const newCount = noClickCount + 1;
     setNoClickCount(newCount);
 
-    // Check if user clicked No 11 times
-    if (newCount >= 11) {
+    // Check if user clicked No 21 times
+    if (newCount >= 21) {
       setRejected(true);
       return;
     }
@@ -236,8 +236,8 @@ export default function ValentineApp() {
             animation: 'flicker 3s infinite',
             textTransform: 'uppercase'
           }}>
-            {noClickCount === 11 ? 'Eleven Times...' :
-              noClickCount <= 15 ? 'Still Saying No?' :
+            {noClickCount === 21 ? 'Twenty One Times...' :
+              noClickCount <= 25 ? 'Still Saying No?' :
                 'This Is Just Cruel'}
           </h1>
 
@@ -250,16 +250,16 @@ export default function ValentineApp() {
             lineHeight: '1.9',
             animation: 'flicker 4s infinite reverse'
           }}>
-            {noClickCount === 11 && 'After eleven deliberate attempts... the pattern is clear.'}
-            {noClickCount > 11 && noClickCount <= 15 && `${noClickCount} times. The statistics don\'t lie.`}
-            {noClickCount > 15 && `${noClickCount} rejections. This goes beyond coincidence into intent.`}
+            {noClickCount === 21 && 'After twenty-one deliberate attempts... the pattern is clear.'}
+            {noClickCount > 21 && noClickCount <= 25 && `${noClickCount} times. The statistics don\'t lie.`}
+            {noClickCount > 25 && `${noClickCount} rejections. This goes beyond coincidence into intent.`}
             <br />
-            {noClickCount <= 13 && 'I understand now. Some questions were never meant to be answered.'}
-            {noClickCount > 13 && noClickCount <= 20 && 'The data suggests a fundamental incompatibility.'}
-            {noClickCount > 20 && 'At this point, this is statistical significance in rejection.'}
+            {noClickCount <= 23 && 'I understand now. Some questions were never meant to be answered.'}
+            {noClickCount > 23 && noClickCount <= 30 && 'The data suggests a fundamental incompatibility.'}
+            {noClickCount > 30 && 'At this point, this is statistical significance in rejection.'}
             <br />
-            {noClickCount <= 15 && 'The darkest reality is acceptance.'}
-            {noClickCount > 15 && 'Reality isn\'t just dark, it\'s mathematically proven.'}
+            {noClickCount <= 25 && 'The darkest reality is acceptance.'}
+            {noClickCount > 25 && 'Reality isn\'t just dark, it\'s mathematically proven.'}
           </p>
 
           {/* Progressive emotional damage indicator */}
