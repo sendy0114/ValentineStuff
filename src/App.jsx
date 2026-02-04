@@ -19,54 +19,68 @@ export default function ValentineApp() {
           size: 20 + Math.random() * 20
         };
         setHearts(prev => [...prev, newHeart]);
-        
+
         setTimeout(() => {
           setHearts(prev => prev.filter(h => h.id !== newHeart.id));
         }, 5000);
       }, 300);
-      
+
       return () => clearInterval(interval);
     }
   }, [accepted]);
 
   const moveNoButton = (e) => {
     e.preventDefault();
-    
+
+    // Prevent double-counting on mobile (touchstart + click)
+    // and desktop (mouseenter + click) by using a timestamp check
+    const now = Date.now();
+    if (window.lastNoInteraction && now - window.lastNoInteraction < 300) {
+      // Just move the button without incrementing the count
+      moveButtonLogic();
+      return;
+    }
+    window.lastNoInteraction = now;
+
     // Increment no click count
     const newCount = noClickCount + 1;
     setNoClickCount(newCount);
-    
+
     // Check if user clicked No 11 times
     if (newCount >= 11) {
       setRejected(true);
       return;
     }
-    
+
+    moveButtonLogic();
+  };
+
+  const moveButtonLogic = () => {
     // Calculate Yes button size changes (oscillate between smaller and larger)
     setYesButtonSize(prev => {
       if (prev >= 1.8) return 0.8; // Make it smaller when too big
       return Math.min(prev + 0.2, 2);
     });
-    
+
     // Get viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    
+
     // Define safe zones (avoid Yes button area and edges)
     const buttonWidth = 120;
     const buttonHeight = 60;
     const margin = 20;
-    
+
     // Yes button is typically centered, so avoid center area
     const centerZoneWidth = viewportWidth * 0.4;
     const centerZoneHeight = viewportHeight * 0.3;
     const centerZoneLeft = (viewportWidth - centerZoneWidth) / 2;
     const centerZoneTop = (viewportHeight - centerZoneHeight) / 2;
-    
+
     let newLeft, newTop;
     let attempts = 0;
     const maxAttempts = 50;
-    
+
     // Try to find a position that doesn't overlap with Yes button
     do {
       newLeft = Math.random() * (viewportWidth - buttonWidth - margin * 2) + margin;
@@ -79,7 +93,7 @@ export default function ValentineApp() {
       newTop < centerZoneTop + centerZoneHeight &&
       newTop + buttonHeight > centerZoneTop
     );
-    
+
     // Fallback to corners if can't find safe position
     if (attempts >= maxAttempts) {
       const corners = [
@@ -92,7 +106,7 @@ export default function ValentineApp() {
       newLeft = randomCorner.left;
       newTop = randomCorner.top;
     }
-    
+
     setNoButtonPosition({
       left: `${newLeft}px`,
       top: `${newTop}px`
@@ -141,7 +155,7 @@ export default function ValentineApp() {
               {Math.random() > 0.5 ? '💔' : '🖤'}
             </div>
           ))}
-          
+
           {/* Pulsing dark circles */}
           {[...Array(5)].map((_, i) => (
             <div key={`circle-${i}`} style={{
@@ -212,7 +226,7 @@ export default function ValentineApp() {
           }}>
             💔
           </div>
-          
+
           <h1 style={{
             fontSize: 'clamp(1.8rem, 4.5vw, 2.5rem)',
             color: '#888',
@@ -222,11 +236,11 @@ export default function ValentineApp() {
             animation: 'flicker 3s infinite',
             textTransform: 'uppercase'
           }}>
-            {noClickCount === 11 ? 'Eleven Times...' : 
-             noClickCount <= 15 ? 'Still Saying No?' : 
-             'This Is Just Cruel'}
+            {noClickCount === 11 ? 'Eleven Times...' :
+              noClickCount <= 15 ? 'Still Saying No?' :
+                'This Is Just Cruel'}
           </h1>
-          
+
           {/* Intelligent messaging based on rejection count */}
           <p style={{
             fontSize: 'clamp(1rem, 2.8vw, 1.3rem)',
@@ -239,11 +253,11 @@ export default function ValentineApp() {
             {noClickCount === 11 && 'After eleven deliberate attempts... the pattern is clear.'}
             {noClickCount > 11 && noClickCount <= 15 && `${noClickCount} times. The statistics don\'t lie.`}
             {noClickCount > 15 && `${noClickCount} rejections. This goes beyond coincidence into intent.`}
-            <br/>
+            <br />
             {noClickCount <= 13 && 'I understand now. Some questions were never meant to be answered.'}
             {noClickCount > 13 && noClickCount <= 20 && 'The data suggests a fundamental incompatibility.'}
             {noClickCount > 20 && 'At this point, this is statistical significance in rejection.'}
-            <br/>
+            <br />
             {noClickCount <= 15 && 'The darkest reality is acceptance.'}
             {noClickCount > 15 && 'Reality isn\'t just dark, it\'s mathematically proven.'}
           </p>
@@ -300,10 +314,10 @@ export default function ValentineApp() {
               color: '#555',
               lineHeight: '1.8'
             }}>
-              <div>Rejection Count: <span style={{color: '#888', fontWeight: 'bold'}}>{noClickCount}</span></div>
-              <div>Success Rate: <span style={{color: '#888', fontWeight: 'bold'}}>0%</span></div>
-              <div>Emotional Damage: <span style={{color: '#888', fontWeight: 'bold'}}>{Math.min(100, noClickCount * 8)}%</span></div>
-              <div>Probability of Change: <span style={{color: '#888', fontWeight: 'bold'}}>{Math.max(0, 100 - noClickCount * 9)}%</span></div>
+              <div>Rejection Count: <span style={{ color: '#888', fontWeight: 'bold' }}>{noClickCount}</span></div>
+              <div>Success Rate: <span style={{ color: '#888', fontWeight: 'bold' }}>0%</span></div>
+              <div>Emotional Damage: <span style={{ color: '#888', fontWeight: 'bold' }}>{Math.min(100, noClickCount * 8)}%</span></div>
+              <div>Probability of Change: <span style={{ color: '#888', fontWeight: 'bold' }}>{Math.max(0, 100 - noClickCount * 9)}%</span></div>
             </div>
           </div>
 
@@ -316,8 +330,8 @@ export default function ValentineApp() {
             opacity: 0.6
           }}>
             {noClickCount <= 15 ? 'Every rejection is data point. The conclusion is clear.' :
-             noClickCount <= 25 ? 'The algorithm of love has terminated with error code: REJECTION_OVERFLOW' :
-             'Even machines understand when to stop trying.'}
+              noClickCount <= 25 ? 'The algorithm of love has terminated with error code: REJECTION_OVERFLOW' :
+                'Even machines understand when to stop trying.'}
           </div>
         </div>
       </div>
@@ -405,7 +419,7 @@ export default function ValentineApp() {
           }}>
             💝 Will You Be My Valentine? 💝
           </h1>
-          
+
           <p style={{
             fontSize: 'clamp(1.1rem, 3vw, 1.5rem)',
             color: '#d81b60',
@@ -573,8 +587,8 @@ export default function ValentineApp() {
             transition: 'transform 0.3s ease',
             cursor: 'pointer'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '15px' }}>💖</div>
             <h3 style={{ color: '#e91e63', marginBottom: '15px', fontSize: '1.3rem' }}>Love is...</h3>
@@ -592,15 +606,15 @@ export default function ValentineApp() {
             transition: 'transform 0.3s ease',
             cursor: 'pointer'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '15px' }}>🌹</div>
             <h3 style={{ color: '#e91e63', marginBottom: '15px', fontSize: '1.3rem' }}>दिल की बात</h3>
             <p style={{ color: '#555', fontStyle: 'italic', lineHeight: '1.8' }}>
-              तेरे बिना ये दिल धड़कता नहीं,<br/>
-              तेरे बिना ये ज़िन्दगी जीता नहीं,<br/>
-              तू है मेरी धड़कन, तू है मेरी जान,<br/>
+              तेरे बिना ये दिल धड़कता नहीं,<br />
+              तेरे बिना ये ज़िन्दगी जीता नहीं,<br />
+              तू है मेरी धड़कन, तू है मेरी जान,<br />
               तेरे साथ ही मेरी पहचान 💕
             </p>
           </div>
@@ -614,8 +628,8 @@ export default function ValentineApp() {
             transition: 'transform 0.3s ease',
             cursor: 'pointer'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '15px' }}>💑</div>
             <h3 style={{ color: '#e91e63', marginBottom: '15px', fontSize: '1.3rem' }}>My Promise</h3>
@@ -633,15 +647,15 @@ export default function ValentineApp() {
             transition: 'transform 0.3s ease',
             cursor: 'pointer'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '15px' }}>✨</div>
             <h3 style={{ color: '#e91e63', marginBottom: '15px', fontSize: '1.3rem' }}>Forever Yours</h3>
             <p style={{ color: '#555', fontStyle: 'italic', lineHeight: '1.8' }}>
-              In your eyes, I found my home,<br/>
-              In your smile, my heart has grown,<br/>
-              With you beside me, I'm complete,<br/>
+              In your eyes, I found my home,<br />
+              In your smile, my heart has grown,<br />
+              With you beside me, I'm complete,<br />
               You make my life so sweet 🌟
             </p>
           </div>
@@ -655,15 +669,15 @@ export default function ValentineApp() {
             transition: 'transform 0.3s ease',
             cursor: 'pointer'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '15px' }}>🎀</div>
             <h3 style={{ color: '#e91e63', marginBottom: '15px', fontSize: '1.3rem' }}>मोहब्बत</h3>
             <p style={{ color: '#555', fontStyle: 'italic', lineHeight: '1.8' }}>
-              तेरी मुस्कान में मेरी खुशी है,<br/>
-              तेरी बाहों में मेरी दुनिया है,<br/>
-              तू मेरा प्यार है, तू मेरा जहां है,<br/>
+              तेरी मुस्कान में मेरी खुशी है,<br />
+              तेरी बाहों में मेरी दुनिया है,<br />
+              तू मेरा प्यार है, तू मेरा जहां है,<br />
               तेरे साथ ही मेरी हर सुबह शाम है 💗
             </p>
           </div>
@@ -677,8 +691,8 @@ export default function ValentineApp() {
             transition: 'transform 0.3s ease',
             cursor: 'pointer'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '15px' }}>🎊</div>
             <h3 style={{ color: '#e91e63', marginBottom: '15px', fontSize: '1.3rem' }}>Our Journey</h3>
